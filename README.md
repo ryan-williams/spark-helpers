@@ -47,10 +47,11 @@ $ echo $SPARK_HOME
 (See [this gist](https://gist.github.com/ryan-williams/f79b108b7ab52f5f398a) for full example output).
 
 ### Notes
-* `<Hadoop version>` defaults to `2.4`, or whatever you've set `$SPARK_HADOOP_VERSION` to.
-* The environment variable `$SPARK_BUILD_ARGS` allows passing extra arguments to the `mvn package` command that builds Spark; e.g. you may want to build a certain profile:
+* `<Hadoop version>` [defaults to `2.4`, or whatever you've set `$SPARK_HADOOP_VERSION` to](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/.spark-rc#L21).
+* The environment variable `$SPARK_BUILD_ARGS` [allows passing extra arguments to the `mvn package` command that builds Spark](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/spark-build#L50); e.g. you may want to build a certain profile:
 
   ```
   export SPARK_BUILD_ARGS="-Pyarn"
   ```
 
+* By default, [`spark-clone`](https://github.com/ryan-williams/spark-helpers/blob/master/spark-clone) will clone `git@github.com:apache/spark.git`; set your own `$SPARK_REPO_URL` env var if you want to use e.g. a local Spark clone you are managing separately. This can be useful if you have work in a local clone that you are interested in building/selecting via `spark-select`.
