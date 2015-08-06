@@ -58,3 +58,8 @@ $ echo $SPARK_HOME
 
 * After you've cloned and built a {sha, hadoop-version} Spark, `spark-select` will reuse it if you run it again with those parameters.
 * [`spark-build`](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/spark-build) ([called by `spark-select`](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/spark-select-impl#L16)) [attempts to find a free `$ZINC_PORT` to use](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/spark-build#L32-L47), allowing multiple builds to occur simultaneously and all use [`zinc`](https://github.com/typesafehub/zinc).
+* If the `<sha>` passed is a valid Spark version, e.g. `1.4.1`, `spark-helpers` will fetch the relevant release from a Spark mirror of your choosing (default: http://mirrors.advancedhosters.com/apache; set `$SPARK_MIRROR` to change). For example:
+
+  ```
+  $ spark-select 1.4.1
+  ```
