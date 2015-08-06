@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
-export sparks="$HOME/sparks"
+if [ -z "$sparks" ]; then
+  export sparks="$HOME/sparks"
+elif [ ! -d "$sparks" ]; then
+  echo "\$sparks directory $sparks not actually a directory!" 1>&2
+fi
 mkdir -p "$sparks"
 
 get_sha_and_hadoop_version() {
-  if [ -z "$sha" ]; then
+  if [ $# -gt 0 ]; then
     sha="$1"
     shift
   fi
@@ -14,7 +18,7 @@ get_sha_and_hadoop_version() {
       hadoop_version="$1"
       shift
     else
-      hadoop_version="2.4"
+      hadoop_version="${SPARK_HADOOP_VERSION:-2.4}"
     fi
   fi
 }

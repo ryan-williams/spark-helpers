@@ -47,6 +47,6 @@ if [ -z "$ZINC_PORT" ]; then
 fi
 echo "zinc port: $ZINC_PORT"
 export ZINC_PORT
-cmd="build/mvn -Pyarn $hadoop_args -DskipTests -DzincPort="${ZINC_PORT:-3030}" $clean_arg package"
+cmd="build/mvn $SPARK_BUILD_ARGS $hadoop_args -DskipTests -DzincPort="${ZINC_PORT:-3030}" $clean_arg package"
 echo "Cmd: $cmd"
 $cmd
