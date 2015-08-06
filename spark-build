@@ -3,31 +3,16 @@
 # Given a SHA and a Hadoop version, clone Spark into a folder namespaced
 # according to those arguments, check out the SHA, and build/package Spark.
 
-if [ $# -eq 0 ]; then
-  echo "Usage: $0 [--clean] <sha> [hadoop version]" 1>&2
-  exit 1
-fi
-
-clean=
-if [ "$1" == "--clean" ]; then
-  clean=1
-  shift
-fi
-
-dir="$(dirname "${BASH_SOURCE[0]}")"
-source "$dir"/.spark-rc
-
-get_sha_and_hadoop_version "$@"
-get_hadoop_args
-
 set -e
+if [ -z "$sh_sha" ]; then
+  dir="$(dirname "${BASH_SOURCE[0]}")"
+  source "$dir"/.spark-rc
+
+  echo "build parsing"
+  parse_spark_helper_args "$@"
+fi
 
 . spark-clone
-
-clean_arg=
-if [ "$clean" ]; then
-  clean_arg="clean"
-fi
 
 if [ -z "$ZINC_PORT" ]; then
   attempts=0
@@ -47,6 +32,7 @@ if [ -z "$ZINC_PORT" ]; then
 fi
 echo "zinc port: $ZINC_PORT"
 export ZINC_PORT
-cmd="build/mvn $SPARK_BUILD_ARGS $hadoop_args -DskipTests -DzincPort="${ZINC_PORT:-3030}" $clean_arg package"
-echo "Cmd: $cmd"
+
+cmd="build/mvn $SPARK_BUILD_ARGS $sh_hadoop_args -DskipTests -DzincPort="${ZINC_PORT:-3030}" $sh_clean_arg package"
+echo "Running mvn cmd: $cmd"
 $cmd
