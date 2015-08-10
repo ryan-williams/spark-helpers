@@ -15,7 +15,7 @@ if [ ! -d "$sh_spark_dir" ]; then
     wget "$url" -O "$local_tgz"
     tar xvzf "$local_tgz" -C "$sparks"
   else
-    echo "$sh_spark_dir not found; cloning and building..."
+    echo "$sh_spark_dir not found for SHA $sh_sha; cloning and building..."
     spark-build
   fi
 fi
