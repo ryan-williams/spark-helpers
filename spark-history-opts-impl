@@ -5,3 +5,5 @@ dir="${2:-$SPARK_LOG_DIR}"
 num="${3:-1000}"
 
 export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=$port -Dspark.history.fs.logDirectory=$dir -Dspark.history.retainedApplications=$num"
+
+echo "$SPARK_HISTORY_OPTS"
