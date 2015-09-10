@@ -12,7 +12,24 @@ if [ -z "$sh_sha" ]; then
   parse_spark_helper_args "$@"
 fi
 
-. spark-clone
+if [ ! -d "$sh_spark_dir" ]; then
+  . spark-clone
+else
+  cd "$sh_spark_dir"
+fi
+
+assembly_jar_dir="$sh_spark_dir/assembly/target/scala-${SPARK_SCALA_VERSION:-2.10}"
+if [ -d "$assembly_jar_dir" ]; then
+  assembly_jar="$(ls -A "$assembly_jar_dir"/*.jar)"
+  if [ "$assembly_jar" ]; then
+    echo "Found assembly JAR: $assembly_jar"
+    if [ "$sh_force_build" ]; then
+      echo "Building anyway"
+    else
+      exit 0
+    fi
+  fi
+fi
 
 if [ -z "$ZINC_PORT" ]; then
   attempts=0
@@ -33,6 +50,6 @@ fi
 echo "zinc port: $ZINC_PORT"
 export ZINC_PORT
 
-cmd="build/mvn $SPARK_BUILD_ARGS $sh_hadoop_args -DskipTests -DzincPort="${ZINC_PORT:-3030}" $sh_clean_arg package"
+cmd="build/mvn --force $SPARK_BUILD_ARGS $sh_hadoop_args -DskipTests -DzincPort="${ZINC_PORT:-3030}" $sh_clean_arg package"
 echo "Running mvn cmd: $cmd"
 $cmd

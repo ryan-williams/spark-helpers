@@ -5,8 +5,8 @@ source "$dir"/.spark-rc
 
 parse_spark_helper_args "$@"
 
-if [ ! -d "$sh_spark_dir" ]; then
-  if [ -n "$sh_version" ]; then
+if [ -n "$sh_version" ]; then
+  if [ ! -d "$sh_spark_dir" ]; then
     echo "Fetching released version: $sh_version"
     tgz="$(basename "$sh_spark_dir").tgz"
     local_tgz="$sparks/$tgz"
@@ -14,11 +14,13 @@ if [ ! -d "$sh_spark_dir" ]; then
     echo "$sh_spark_dir not found; fetching $url"
     wget "$url" -O "$local_tgz"
     tar xvzf "$local_tgz" -C "$sparks"
-  else
-    echo "$sh_spark_dir not found for SHA $sh_sha; cloning and building..."
-    spark-build
+  fi
+else
+  if ! spark-build; then
+    return 1
   fi
 fi
+
 export SPARK_HOME="$sh_spark_dir"
 
 sh_sha=

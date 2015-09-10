@@ -30,12 +30,23 @@ parse_spark_helper_args() {
   #   - sh_hadoop_args: Hadoop profile and version information to be passed to `mvn package`.
   #   - sh_spark_dir: local directory that the selected Spark version will be found/built in.
 
-  sh_clean_arg=
-  if [ "$1" == "--clean" ]; then
-    sh_clean_arg="clean"
-    shift
-  fi
+  while getopts ":cf" opt; do
+    case $opt in
+      c)
+        sh_clean_arg="clean"
+        ;;
+      f)
+        sh_force_build=1
+        ;;
+      \?)
+        break
+        ;;
+    esac
+  done
+  shift $((OPTIND-1))
+
   export sh_clean_arg
+  export sh_force_build
 
   if [ $# -gt 0 ]; then
     sh_sha="$1"
