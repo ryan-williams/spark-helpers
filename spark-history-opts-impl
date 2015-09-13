@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-port="${1:-18081}"
-dir="${2:-$SPARK_LOG_DIR}"
-num="${3:-1000}"
+port="${1:-18080}"
+dir="${2:-$SPARK_EVENTLOG_DIR}"
+num="${3:-5000}"
 
 export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=$port -Dspark.history.fs.logDirectory=$dir -Dspark.history.retainedApplications=$num"
 

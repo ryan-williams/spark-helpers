@@ -46,6 +46,23 @@ $ echo $SPARK_HOME
 
 (See [this gist](https://gist.github.com/ryan-williams/f79b108b7ab52f5f398a) for full example output).
 
+### Setting History Server Opts
+This repo includes a helper, `spark-history-opts`, for changing the `$SPARK_HISTORY_OPTS` env var:
+
+```
+$ spark-history-opts 12345 /path/to/dir 10000
+$ echo $SPARK_HISTORY_OPTS
+-Dspark.history.ui.port=12345 -Dspark.history.fs.logDirectory=/path/to/dir -Dspark.history.retainedApplications=10000
+
+# Start Spark history server
+$ $SPARK_HOME/sbin/start-history-server.sh
+
+# Omitted values default to 18080, the contents of the $SPARK_EVENTLOG_DIR env var, and 1000
+$ spark-history-opts
+$ echo $SPARK_HISTORY_OPTS
+-Dspark.history.ui.port=18080 -Dspark.history.fs.logDirectory=… -Dspark.history.retainedApplications=5000
+```
+
 ### Notes
 * `<Hadoop version>` [defaults to `2.4`, or whatever you've set `$SPARK_HADOOP_VERSION` to](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/.spark-rc#L21).
 * The environment variable `$SPARK_BUILD_ARGS` [allows passing extra arguments to the `mvn package` command that builds Spark](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/spark-build#L50); e.g. you may want to build a certain profile:
@@ -58,8 +75,8 @@ $ echo $SPARK_HOME
 
 * After you've cloned and built a {sha, hadoop-version} Spark, `spark-select` will reuse it if you run it again with those parameters.
 * [`spark-build`](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/spark-build) ([called by `spark-select`](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/spark-select-impl#L16)) [attempts to find a free `$ZINC_PORT` to use](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/spark-build#L32-L47), allowing multiple builds to occur simultaneously and all use [`zinc`](https://github.com/typesafehub/zinc).
-* If the `<sha>` passed is a valid Spark version, e.g. `1.4.1`, `spark-helpers` will fetch the relevant release from a Spark mirror of your choosing (default: http://mirrors.advancedhosters.com/apache; set `$SPARK_MIRROR` to change). For example:
+* If the `<sha>` passed is a valid Spark version, e.g. `1.5.0`, `spark-helpers` will fetch the relevant release from a Spark mirror of your choosing (default: http://mirrors.advancedhosters.com/apache; set `$SPARK_MIRROR` to change). For example:
 
   ```
-  $ spark-select 1.4.1
+  $ spark-select 1.5.0
   ```
