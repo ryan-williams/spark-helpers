@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+# Run a headless spark-shell, see if it boots successfully, exit 0 or 1
+# accordingly.
+
+f="`mktemp`"
+
+failure_needle="not found: value sqlContext"
+
+success_needle="available as sqlContext"
+
+"$SPARK_HOME"/bin/spark-shell &>"$f" &
+pid=$!
+disown
+
+out="$(tail -f "$f" | grep -o -e "$failure_needle" -e "$success_needle" -m 1)"
+
+kill $pid
+wait $pid &> /dev/null
+
+rm -f "$f"
+
+stty echo
+stty icanon
+
+if [ "$out" == "$failure_needle" ]; then
+  exit 1
+fi
+
+if [ "$out" == "$success_needle" ]; then
+  exit 0
+fi
+
+exit 2

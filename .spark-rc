@@ -69,7 +69,7 @@ parse_spark_helper_args() {
     sh_hadoop_version="$1"
     shift
   else
-    sh_hadoop_version="${SPARK_HADOOP_VERSION:-2.6}"
+    sh_hadoop_version="${SPARK_HELPERS_HADOOP_VERSION:-2.6}"
   fi
   export sh_hadoop_version
 

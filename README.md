@@ -64,7 +64,7 @@ $ echo $SPARK_HISTORY_OPTS
 ```
 
 ### Notes
-* `<Hadoop version>` [defaults to `2.4`, or whatever you've set `$SPARK_HADOOP_VERSION` to](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/.spark-rc#L21).
+* `<Hadoop version>` [defaults to `2.4`, or whatever you've set `$SPARK_HELPERS_HADOOP_VERSION` to](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/.spark-rc#L21).
 * The environment variable `$SPARK_BUILD_ARGS` [allows passing extra arguments to the `mvn package` command that builds Spark](https://github.com/ryan-williams/spark-helpers/blob/96026b95edeffdcc3f40549db64e42f4d1f7ff78/spark-build#L50); e.g. you may want to build a certain profile:
 
   ```
