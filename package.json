@@ -1,0 +1,10 @@
+{
+  "name": "spark-helpers",
+  "version": "0.0.0",
+  "repository": "https://github.com/ryan-williams/spark-helpers",
+  "license": "MIT",
+  "dependencies": {
+    "minimist": "^1.2.0",
+    "oboe": "2.1.2"
+  }
+}

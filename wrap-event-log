@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 <in> <out>" 1>&2
+  exit 1
+fi
+
+cat <(echo '{"events":[') <(perl -pe 's/$/,/' "$1" | sed '$s/,$//') <(echo ']}') > "$2"
