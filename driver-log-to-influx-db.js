@@ -1,4 +1,5 @@
 
+var extend = require('util')._extend;
 var fs = require('fs');
 var argv = require('minimist')(process.argv.slice(2));
 var es = require('event-stream');
@@ -148,6 +149,7 @@ var fields = {
   SparkContextInvokingStop: 'scis',
   SparkContextStopped: 'scs',
   ShuttingDownAllExecutors: 'sdae',
+  StageStartMessages: 'ssm',
   StoppingDAGScheduler: 'sds',
   ShutdownHookCalled: 'shc',
   ShutdownHookDeletingDirectory: 'shdd',
@@ -339,6 +341,7 @@ function aggBySecond(obj, cb) {
     inc(fields.DAGSchedulerMissingParents);
   } else if (line.match(/^scheduler\.DAGScheduler: Submitting .*Stage .*, which (?:has no missing parents|is now runnable)/)) {
     inc(fields.DAGSchedulerSubmittingStage);
+    inc(fields.StageStartMessages);
   } else if (line.match(/^spark\.SparkContext: Created broadcast/)) {
     inc(fields.SparkContextCreatedBroadcast);
   } else if (line.match(/^scheduler\.DAGScheduler: Submitting \d+ missing tasks/)) {
@@ -408,6 +411,114 @@ function aggBySecond(obj, cb) {
   prevTime = curTime;
 }
 
+function joinFields(o) {
+  var arr = [];
+  for (var k in o) {
+    arr.push([k, o[k]].join('='));
+  }
+  return arr.join(',');
+}
+
+function secondObjToLineStrs(obj, measurement, dt) {
+  var arr = [];
+  measurement = measurement || 'dl';
+  dt = dt || obj.dt;
+  var keyArr = [measurement];
+  for (var tagsStr in obj) {
+    if (tagsStr == 'dt') continue;
+    if (tagsStr == 'total' || tagsStr == 'stageTotal') {
+      arr = arr.concat(secondObjToLineStrs(obj[tagsStr], "dl" + tagsStr[0], dt));
+      continue;
+    }
+    var fields = joinFields(obj[tagsStr]);
+    var key = keyArr.concat(tagsStr ? [tagsStr] : []).join(',');
+    arr.push([key, fields, dt + '000000000'].join(' ') + '\n');
+  }
+  return arr;
+}
+
+function secondObjToInfluxLines(obj) {
+  var objs = secondObjToLineStrs(obj);
+  objs.forEach(function(o) {
+    this.emit('data', o);
+  }.bind(this));
+}
+
+var totalAccumObj = {};
+var stageAccumObj = {};
+var lastTime = null;
+function accumulateValues(obj) {
+  obj.total = {};
+  obj.stageTotal = {};
+  for (var tagsStr in obj) {
+    if (tagsStr == 'dt' || tagsStr == 'total' || tagsStr == 'stageTotal') continue;
+    var o = obj[tagsStr];
+
+    obj.total[tagsStr] = {};
+    obj.stageTotal[tagsStr] = {};
+
+    if (fields.StageStartMessages in o) {
+      for (var ts in stageAccumObj) {
+        var so = stageAccumObj[ts];
+        obj.stageTotal[ts] = {};
+        for (var k in so) {
+          obj.stageTotal[ts][k] = 0;
+        }
+      }
+      stageAccumObj = {};
+    }
+
+    if (!(tagsStr in totalAccumObj)) {
+      totalAccumObj[tagsStr] = {};
+    }
+    var t = totalAccumObj[tagsStr];
+
+    if (!(tagsStr in stageAccumObj)) {
+      stageAccumObj[tagsStr] = {};
+    }
+    var s = stageAccumObj[tagsStr];
+
+    for (var k in o) {
+      if (o[k]) {
+        t[k] = (t[k] || 0) + o[k];
+        s[k] = (s[k] || 0) + o[k];
+
+        obj.total[tagsStr][k] = t[k];
+        obj.stageTotal[tagsStr][k] = s[k];
+      }
+    }
+
+  }
+  if (lastTime && obj.dt <= lastTime) {
+    console.error("Fishy datetime progression: %d -> %d", lastTime, obj.dt);
+  }
+  lastTime = obj.dt;
+  this.emit('data', obj);
+}
+
+function emitFinalTotalsZeroObj() {
+  var obj = { dt: lastTime + 1, stageTotal: {}, total: {} };
+  for (var ts in stageAccumObj) {
+    var so = stageAccumObj[ts];
+    obj.stageTotal[ts] = {};
+    for (var k in so) {
+      obj.stageTotal[ts][k] = 0;
+    }
+  }
+  stageAccumObj = {};
+
+  for (var ts in totalAccumObj) {
+    var so = totalAccumObj[ts];
+    obj.total[ts] = {};
+    for (var k in so) {
+      obj.total[ts][k] = 0;
+    }
+  }
+  totalAccumObj = {};
+
+  this.emit('data', obj);
+}
+
 instream
       .pipe(es.split())
       .pipe(new LogLineParser())
@@ -427,21 +538,6 @@ instream
               this.emit('end');
             }
       ))
-      .pipe(es.through(
-            function(obj) {
-              for (var tagsStr in obj) {
-                if (tagsStr == 'dt') continue;
-                var o = obj[tagsStr];
-                var arr = [];
-                for (var k in o) {
-                  if (o[k]) {
-                    arr.push([k, o[k]].join('='));
-                  }
-                }
-                var fields = arr.join(',');
-                var key = ['dl'].concat(tagsStr ? [tagsStr] : []).join(',');
-                this.emit('data', [key, fields, obj.dt + '000000000'].join(' ') + '\n');
-              }
-            }
-      ))
+      .pipe(es.through(accumulateValues, emitFinalTotalsZeroObj))
+      .pipe(es.through(secondObjToInfluxLines))
       .pipe(process.stdout);
