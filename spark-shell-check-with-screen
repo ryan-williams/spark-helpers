@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -e
+
+f="`mktemp`"
+
+#echo "starting screen"
+screen -q bash -c 'spark-shell-check-in-screen; echo $? > '"$f" &> /dev/null
+#echo "screen done"
+
+retcode="`tail -n 1 "$f"`"
+
+#echo "got retcode: $retcode"
+
+rm -f "$f"
+
+exit $retcode

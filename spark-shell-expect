@@ -1,0 +1,14 @@
+#!/usr/bin/env expect -f
+
+spawn $::env(SPARK_HOME)/bin/spark-shell
+
+expect {
+  #"available as sc" {puts "sc"; exit 5}
+  #BoneCP {puts "bonecp"; exit 4}
+  #"WARN" {puts "found warning"; exit 3}
+  #"repl log4j" {puts "found repl"; exit 2}
+  "not found: value sqlContext" {puts "boot error"; exit 1}
+  "available as sqlContext" {puts "success"; exit 0}
+}
+
+interact
