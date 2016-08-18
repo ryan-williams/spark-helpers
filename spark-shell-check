@@ -9,7 +9,7 @@ failure_needle="not found: value sqlContext"
 
 success_needle="available as sqlContext"
 
-"$SPARK_HOME"/bin/spark-shell &>"$f" &
+"$SPARK_HOME"/bin/spark-shell "$@" &>"$f" &
 pid=$!
 disown
 

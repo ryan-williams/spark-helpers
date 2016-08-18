@@ -12,11 +12,7 @@ if [ -z "$sh_sha" ]; then
   parse_spark_helper_args "$@"
 fi
 
-if [ ! -d "$sh_spark_dir" ]; then
-  . spark-clone
-else
-  cd "$sh_spark_dir"
-fi
+. spark-clone
 
 assembly_jar_dir="$sh_spark_dir/assembly/target/scala-${SPARK_SCALA_VERSION:-2.10}"
 if [ -d "$assembly_jar_dir" ]; then
