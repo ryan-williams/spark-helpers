@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ -d "$SPARK_HOME/assembly/target/scala-${SPARK_SCALA_VERSION:-2.10}" ]; then
+  find "$SPARK_HOME/assembly/target/scala-${SPARK_SCALA_VERSION:-2.10}" -name '*.jar'
+elif [ -d "$SPARK_HOME"/lib ]; then
+  find "$SPARK_HOME/lib" -name 'spark-assembly*.jar'
+else
+  echo "No Spark assembly jar found" 1>&2
+  exit 1
+fi
