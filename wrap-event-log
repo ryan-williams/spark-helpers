@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+echo '{"events":['
+perl -pe 's/$/,/' "$@" | \
+  sed '$s/,$//' | \
+  pe 's/Task Info/TaskInfo/g' | \
+  pe 's/Task ID/TaskID/g' | \
+  pe 's/Executor ID/ExecutorID/g' | \
+  pe 's/Stage Info/StageInfo/g' | \
+  pe 's/Stage ID/StageID/g' | \
+  pe 's/Stage Attempt ID/StageAttemptID/g' | \
+  pe 's/Launch Time/LaunchTime/' | \
+  pe 's/Block Manager ID/BlockManagerID/'
+
+echo ']}'

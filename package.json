@@ -1,0 +1,14 @@
+{
+  "name": "spark-helpers",
+  "version": "0.0.0",
+  "repository": "https://github.com/ryan-williams/spark-helpers",
+  "license": "MIT",
+  "dependencies": {
+    "event-stream": "^3.3.2",
+    "minimist": "^1.2.0",
+    "moment": "^2.10.6",
+    "oboe": "2.1.2",
+    "stream": "0.0.2",
+    "util": "^0.10.3"
+  }
+}

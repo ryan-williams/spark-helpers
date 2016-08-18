@@ -90,3 +90,7 @@ parse_spark_helper_args() {
 
 alias spark-select=". spark-select-impl"
 alias spark-history-opts=". spark-history-opts-impl"
+
+wel() {
+  wrap-event-log "$@"
+}
