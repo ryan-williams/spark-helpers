@@ -10,7 +10,7 @@ if [ -n "$sh_version" ]; then
     echo "Fetching released version: $sh_version"
     tgz="$(basename "$sh_spark_dir").tgz"
     local_tgz="$sparks/$tgz"
-    url="${SPARK_MIRROR:-http://www.motorlogy.com/apache}/spark/spark-${sh_version}/${tgz}"
+    url="${SPARK_MIRROR:-http://www-us.apache.org/dist}/spark/spark-${sh_version}/${tgz}"
     echo "$sh_spark_dir not found; fetching $url"
     wget "$url" -O "$local_tgz"
     tar xvzf "$local_tgz" -C "$sparks"
