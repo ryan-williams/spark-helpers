@@ -22,7 +22,7 @@ When this finishes, you'll have a version of Spark built from `<sha>` for Hadoop
 
 ```
 $ spark-select 29ace3b
-  Cloning spark into /Users/ryan/sparks/spark-29ace3b-bin-hadoop2.4
+  Cloning spark into $HOME/sparks/spark-29ace3b-bin-hadoop2.4
   …
   Note: checking out '29ace3b'.
   …
@@ -41,7 +41,7 @@ $ spark-select 29ace3b
   [INFO] Final Memory: 69M/336M
   [INFO] ------------------------------------------------------------------------
 $ echo $SPARK_HOME
-  /Users/ryan/sparks/spark-29ace3b-bin-hadoop2.4
+  $HOME/sparks/spark-29ace3b-bin-hadoop2.4
 ```
 
 (See [this gist](https://gist.github.com/ryan-williams/f79b108b7ab52f5f398a) for full example output).
